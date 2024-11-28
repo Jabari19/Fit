@@ -1,23 +1,29 @@
 <?php
-// Database configuration
-$host = 'localhost'; // Database host (usually localhost for local development)
-$dbname = 'WorkoutDB'; // Your database name
-$username = 'root'; // Your database username
-$password = ''; // Your database password (leave empty for default local setup)
+// Database connection settings
+$host = 'localhost';  // Database host
+$db   = 'WorkoutDB';  // Database name
+$user = 'root';       // Database username
+$pass = '';           // Database password (empty for localhost by default)
+$charset = 'utf8mb4'; // Character set
 
-// Create a PDO instance and set options
+// DSN (Data Source Name) string
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+
+// PDO options for better performance and error handling
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Enable exception handling for errors
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,       // Fetch results as associative arrays
+    PDO::ATTR_EMULATE_PREPARES   => false,                   // Disable emulated prepared statements for better security
+];
+
 try {
-    // Create the PDO instance for MySQL database connection
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    // Create a PDO instance and establish a connection to the database
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    // Log error message to a file instead of exposing it to the user
+    error_log("Database connection error: " . $e->getMessage(), 3, 'error_log.txt');
     
-    // Set PDO error mode to exception to handle errors more easily
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Set default fetch mode to associative array
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    // Handle any connection errors by displaying the error message
-    echo "Connection failed: " . $e->getMessage();
-    exit;
+    // Optionally, redirect to a custom error page for better user experience
+    die('Database connection failed. Please try again later.');
 }
 ?>

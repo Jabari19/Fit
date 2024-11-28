@@ -1,36 +1,12 @@
 <?php
+include 'config.php';
 session_start();
-include 'config.php';  // Database connection
 
-// Ensure the user is an admin
-if ($_SESSION['role'] !== 'admin') {
-    header("Location: index.php");
+// Restrict access to admins only
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: login.php");
     exit;
 }
-
-// Fetch Users
-$sql_users = "SELECT * FROM Users";
-$stmt_users = $pdo->prepare($sql_users);
-$stmt_users->execute();
-$users = $stmt_users->fetchAll();
-
-// Fetch Workouts
-$sql_workouts = "SELECT * FROM Workouts";
-$stmt_workouts = $pdo->prepare($sql_workouts);
-$stmt_workouts->execute();
-$workouts = $stmt_workouts->fetchAll();
-
-// Fetch Goals
-$sql_goals = "SELECT * FROM Goals";
-$stmt_goals = $pdo->prepare($sql_goals);
-$stmt_goals->execute();
-$goals = $stmt_goals->fetchAll();
-
-// Fetch Nutrition Logs
-$sql_nutrition = "SELECT * FROM Nutrition";
-$stmt_nutrition = $pdo->prepare($sql_nutrition);
-$stmt_nutrition->execute();
-$nutrition = $stmt_nutrition->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -38,90 +14,51 @@ $nutrition = $stmt_nutrition->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-
-    <h1>Admin Dashboard</h1>
-    <p>As an admin, you can view and manage data below.</p>
-
-    <h2>Users</h2>
-    <table border="1">
-        <tr>
-            <th>User ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Age</th>
-        </tr>
-        <?php foreach ($users as $user): ?>
-        <tr>
-            <td><?php echo $user['user_id']; ?></td>
-            <td><?php echo $user['first_name'] . ' ' . $user['last_name']; ?></td>
-            <td><?php echo $user['email']; ?></td>
-            <td><?php echo $user['role']; ?></td>
-            <td><?php echo $user['age']; ?></td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
-
-    <h2>Workouts</h2>
-    <table border="1">
-        <tr>
-            <th>Workout ID</th>
-            <th>User ID</th>
-            <th>Date</th>
-            <th>Duration (minutes)</th>
-        </tr>
-        <?php foreach ($workouts as $workout): ?>
-        <tr>
-            <td><?php echo $workout['workout_id']; ?></td>
-            <td><?php echo $workout['user_id']; ?></td>
-            <td><?php echo $workout['date']; ?></td>
-            <td><?php echo $workout['duration']; ?></td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
-
-    <h2>Goals</h2>
-    <table border="1">
-        <tr>
-            <th>Goal ID</th>
-            <th>User ID</th>
-            <th>Goal Type</th>
-            <th>Target Value</th>
-            <th>Progress</th>
-        </tr>
-        <?php foreach ($goals as $goal): ?>
-        <tr>
-            <td><?php echo $goal['goal_id']; ?></td>
-            <td><?php echo $goal['user_id']; ?></td>
-            <td><?php echo $goal['goal_type']; ?></td>
-            <td><?php echo $goal['target_value']; ?></td>
-            <td><?php echo $goal['progress']; ?></td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
-
-    <h2>Nutrition Logs</h2>
-    <table border="1">
-        <tr>
-            <th>Nutrition ID</th>
-            <th>User ID</th>
-            <th>Meal Type</th>
-            <th>Calories</th>
-            <th>Date</th>
-        </tr>
-        <?php foreach ($nutrition as $meal): ?>
-        <tr>
-            <td><?php echo $meal['nutrition_id']; ?></td>
-            <td><?php echo $meal['user_id']; ?></td>
-            <td><?php echo $meal['meal_type']; ?></td>
-            <td><?php echo $meal['calories']; ?></td>
-            <td><?php echo $meal['date']; ?></td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
-
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <ul>
+            <li><a href="admin_dashboard.php">Admin Dashboard</a></li>
+            <li><a href="admin_users.php">Manage Users</a></li>
+            <li><a href="logout.php">Logout</a></li>
+        </ul>
+    </div>
 </body>
 </html>
